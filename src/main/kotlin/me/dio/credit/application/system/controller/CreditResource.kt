@@ -1,7 +1,6 @@
 package me.dio.credit.application.system.controller
 
 import io.swagger.v3.oas.annotations.Operation
-import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
@@ -14,7 +13,6 @@ import me.dio.credit.application.system.service.impl.CreditService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import java.math.BigDecimal
 import java.util.*
 import java.util.stream.Collectors
 
@@ -29,6 +27,7 @@ class CreditResource(
   @Operation(summary = "Create a new Credit", method = "POST")
   @ApiResponses(value = [
     ApiResponse(responseCode = "200", description = "Credit added successfully"),
+    ApiResponse(responseCode = "201", description = "Credit added successfully"),
     ApiResponse(responseCode = "400", description = "Bad Request"),
     ApiResponse(responseCode = "401", description = "Unauthorized"),
     ApiResponse(responseCode = "403", description = "Forbidden"),
@@ -36,12 +35,10 @@ class CreditResource(
     ApiResponse(responseCode = "500", description = "Internal Server Error"),
   ])
   @PostMapping
-  fun saveCredit(
-    @RequestBody @Valid creditDto: CreditDto
-): ResponseEntity<String> {
-    val credit: Credit = this.creditService.save(creditDto.toEntity())
-    return ResponseEntity.status(HttpStatus.CREATED)
-      .body("Credit ${credit.creditCode} - Customer ${credit.customer?.email} saved!")
+  fun saveCredit(@RequestBody @Valid creditDto: CreditDto): ResponseEntity<String> {
+      val credit: Credit = creditService.save(creditDto.toEntity())
+      val responseMessage = "Credit ${credit.creditCode} - Customer ${credit.customer?.email} saved!"
+      return ResponseEntity.status(HttpStatus.CREATED).body(responseMessage)
   }
 
   @Operation(summary = "Find all by Customer ID", method = "GET")
